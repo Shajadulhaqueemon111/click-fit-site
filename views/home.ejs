@@ -1,0 +1,111 @@
+
+<!DOCTYPE html>
+ <html lang="en">
+ <head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Click Fit</title>
+   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    /* Add your custom styles here */
+    body {
+       background-color: #f8f9fa;
+   }
+     .container {
+      margin-top: 50px;
+    }
+    .dropzone {
+      border: 2px dashed #007bff;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .dropzone img {
+      max-width: 100%;
+     max-height: 300px;
+    }
+     .h1{
+         color: blue;
+     }
+    .drope{
+         color: blue;
+     }
+   </style>
+ </head>
+ <body>
+
+   <div class="container">
+    <h1 class="h1">Welcome to Click Fit</h1>
+    <p>This is your one-stop destination for fitness and sports!</p>
+    
+     <!-- Dropzone for images -->
+    <div class="dropzone" id="dropzone">
+       <p class="drope">Drag & Drop Images Here or Click to Upload</p>
+       <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="profileImage">
+        <!-- Add other form fields here if needed -->
+        <button type="submit">Upload</button>
+    </form>
+    </div>
+
+    <!-- Uploaded Images Preview -->
+    <div id="imagePreview"></div>
+
+     <!-- Fitness Facts -->
+    <div class="" id="fitnessFacts"></div>
+  </div>
+
+   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      
+      $.ajax({
+        url: 'http://numbersapi.com/1/30/date?json',
+        type: 'GET',
+        success: function(data) {
+          $('#fitnessFacts').html('<h2>Fitness Fact of the Day</h2><p>' + data.text + '</p>');
+        },
+        error: function(xhr, status, error) {
+          console.error('Error fetching fitness facts:', error);
+        }
+      });
+
+     
+      $('#dropzone').on('click', function() {
+        $('#fileInput').click();
+      });
+
+      $('#fileInput').on('change', function() {
+        handleFiles(this.files);
+      });
+
+      function handleFiles(files) {
+        $('#imagePreview').empty(); // Clear previous previews
+
+        for (var i = 0; i < files.length; i++) {
+          var file = files[i];
+          var imageType = /^image\//;
+
+          if (!imageType.test(file.type)) {
+            console.warn('File is not an image:', file.name);
+            continue;
+          }
+
+          var img = document.createElement('img');
+          img.classList.add('img-fluid');
+          img.file = file;
+          $('#imagePreview').append(img);
+
+          var reader = new FileReader();
+          reader.onload = (function(aImg) {
+            return function(e) {
+              aImg.src = e.target.result;
+            };
+          })(img);
+
+          reader.readAsDataURL(file);
+        }
+      }
+    });
+  </script>
